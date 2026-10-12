@@ -1,0 +1,12 @@
+# 1. Environments
+.venv/
+__pycache__/
+
+# 2. Secrets
+.env
+
+# 3. Data (Ignore contents, but keep the directory structure)
+data/raw/*
+!data/raw/.gitkeep
+data/clean/*
+!data/clean/.gitkeep

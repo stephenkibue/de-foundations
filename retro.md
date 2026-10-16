@@ -26,3 +26,15 @@ I learned how to keep a running total, count up specific categories, and use the
 
 **4. One question I still have:**
 Now that my `while` loop lets a user type in all this data, how do I actually save it permanently so it isn't erased the moment the program finishes running?
+## Day 4
+**1. Warm-up score & biggest surprise:**
+My biggest surprise was seeing how easy it is to pull the last item in a list using index `[-1]`, and learning that `in` on a list of dictionaries looks for an exact dictionary match, not a value inside them.
+
+**2. Most frequent error today:**
+String quote collisions (`SyntaxError` from mixing double quotes inside an f-string) and missing dictionary keys (`KeyError` when looking for "eggs" due to a typo).
+
+**3. What I learned about dictionaries and Group-By:**
+I learned how to group data dynamically by using an empty dictionary, checking if a key (like a flock name) exists, and either creating a new bucket or adding to an existing one. I also learned how to use `lambda` to sort a list of dictionaries by a specific key.
+
+**4. One question I still have:**
+How do we get this kind of data out of an actual file or database instead of hard-coding a massive list of dictionaries at the top of the script?

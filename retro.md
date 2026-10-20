@@ -51,3 +51,19 @@ I learned the DRY principle (Don't Repeat Yourself) by passing a `field` variabl
 
 **4. One question I still have:**
 Now that we have clean functions and a solid `main()` report, how do we handle real-world messy data formats like actual calendar dates instead of just treating them as strings?
+## Day 6 (Week 2, Day 1)
+**1. Warm-up score:**
+70
+
+**2. Hardest problem to spot by eye:**
+The invisible spaces, like the flock listed as "B " instead of "B", or the eggs recorded as " 405 ". You would never catch those just scrolling through a spreadsheet visually.
+
+**3. Cleaning rules:**
+1. Duplicates: Check the row tuple against a seen set; drop exact duplicates.
+2. Date: Check for slashes (/). If found, split and rearrange DD/MM/YYYY into YYYY-MM-DD.
+3. Flock: Trim spaces and make uppercase. If the result is not exactly 'A', 'B', or 'C', reject the row.
+4. Eggs: Trim spaces. If blank, negative, or not a perfect digit string, reject the row.
+5. Birds: Trim spaces. If blank, negative, or not a perfect digit string, reject the row.
+
+**4. One question I still have:**
+When we "reject" a row on Wednesday, do we just delete it entirely, or do we save the bad rows into a separate error file so people like Otieno can fix their mistakes?

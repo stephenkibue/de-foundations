@@ -38,3 +38,16 @@ I learned how to group data dynamically by using an empty dictionary, checking i
 
 **4. One question I still have:**
 How do we get this kind of data out of an actual file or database instead of hard-coding a massive list of dictionaries at the top of the script?
+
+## Day 5
+**1. Warm-up score & biggest surprise:**
+My biggest surprise was seeing how much cleaner the code becomes when you move the math out of the main script and into small, reusable functions. List and dictionary comprehensions are also surprisingly powerful for doing complex filtering in just one line of code.
+
+**2. Most frequent error today:**
+`AssertionError`. I learned that the `assert` tests are strictly case-sensitive (e.g., expecting exactly "no data" and failing if there is a typo or capital letter).
+
+**3. What I learned about functional programming:**
+I learned the DRY principle (Don't Repeat Yourself) by passing a `field` variable into my group-by function so it can sum up *any* column. I also learned how to use a guard clause (`if rate is None:`) to prevent errors from crashing the program, and how `main()` acts as a conductor to just run the final report.
+
+**4. One question I still have:**
+Now that we have clean functions and a solid `main()` report, how do we handle real-world messy data formats like actual calendar dates instead of just treating them as strings?

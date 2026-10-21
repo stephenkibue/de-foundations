@@ -67,3 +67,36 @@ The invisible spaces, like the flock listed as "B " instead of "B", or the eggs 
 
 **4. One question I still have:**
 When we "reject" a row on Wednesday, do we just delete it entirely, or do we save the bad rows into a separate error file so people like Otieno can fix their mistakes?
+
+## Day 7 (Week 2, Day 2 - Mashujaa Day)
+**1. Warm-up score:**
+68
+
+**2. Shape of farm.json:**
+- farm (dict)
+  - name
+  - county
+  - exported_at
+  - active
+- flocks (list)
+  - flock (dict)
+    - id
+    - breed
+    - house
+    - placed_on
+    - vaccinations (list of dicts)
+      - vaccine
+      - date
+    - records (list of dicts)
+      - date
+      - eggs
+      - birds
+      - feed_kg
+      - notes
+
+**3. Questions for the farm:**
+- Flock C (Oct 17): "There is no record for Flock C on October 17. Was the data simply not recorded, or did something happen that prevented data collection?"
+- Flock B (Oct 15): "I noticed a dip in production on Oct 15 and a note about a blocked water line. Was the blockage resolved quickly, and should we expect any lingering effects on the flock's performance?"
+
+**4. One question I still have:**
+When flattening nested JSON, how do we handle extremely deep nesting (like 5 or 6 levels down) without writing massive, confusing loops?

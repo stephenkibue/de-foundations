@@ -1,67 +1,66 @@
 from datetime import datetime, date
+from dataclasses import dataclass, asdict
+import re
 
-VALID_FLOCKS = {"A", "B", "C"}
+@dataclass
+class ProductionRecord:
+    date: date
+    flock: str
+    eggs: int
+    birds: int
+    recorded_by: str
+
+    def laying_rate(self):
+        if self.birds == 0:
+            return 0.0
+        return self.eggs / self.birds
+
+def parse_date(text):
+    if text is None or not str(text).strip():
+        raise ValueError(f"date is not a real date: '{text}'")
+    cleaned = str(text).strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"):
+        try:
+            dt = datetime.strptime(cleaned, fmt)
+            return dt.date()
+        except ValueError:
+            continue
+    raise ValueError(f"date is not a real date: '{text}'")
 
 def parse_count(text, name):
-    text = text.strip().replace(",", "")
-    if not text:
+    if text is None or str(text).strip() == "":
         raise ValueError(f"{name} is missing")
-    try:
-        val = int(text)
-    except ValueError:
+    cleaned = str(text).strip().replace(",", "")
+    if not re.match(r"^-?\d+$", cleaned):
         raise ValueError(f"{name} is not a number: '{text}'")
+    val = int(cleaned)
     if val < 0:
         raise ValueError(f"{name} is negative: {val}")
     return val
 
-def parse_date(text):
-    text = text.strip()
-    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"):
-        try:
-            return datetime.strptime(text, fmt).date()
-        except ValueError:
-            continue
-    raise ValueError(f"date is not a real date: {text!r}")
-
 def parse_flock(text):
-    clean_val = text.strip().upper()
-    if clean_val not in VALID_FLOCKS:
+    if not text or not str(text).strip():
+        raise ValueError("flock is missing")
+    cleaned = str(text).strip().upper()
+    if cleaned not in ("A", "B", "C"):
         raise ValueError(f"unknown flock: '{text}'")
-    return clean_val
+    return cleaned
 
 def validate_row(row):
-    clean_date = parse_date(row["date"])
-    clean_flock = parse_flock(row["flock"])
-    clean_eggs = parse_count(row["eggs"], "eggs")
-    clean_birds = parse_count(row["birds"], "birds")
-    if clean_birds == 0:
-        raise ValueError("birds cannot be zero")
-    if clean_eggs > clean_birds:
-        raise ValueError("eggs cannot exceed birds")
-    return {
-        "date": clean_date,
-        "flock": clean_flock,
-        "eggs": clean_eggs,
-        "birds": clean_birds,
-        "recorded_by": row["recorded_by"].strip()
-    }
+    date_val = parse_date(row.get("date"))
+    flock_val = parse_flock(row.get("flock"))
+    eggs_val = parse_count(row.get("eggs"), "eggs")
+    birds_val = parse_count(row.get("birds"), "birds")
 
-def check():
-    assert parse_date("2026-10-01") == date(2026, 10, 1)
-    assert parse_date("01/10/2026") == date(2026, 10, 1)
-    assert parse_date("10/14/2026") == date(2026, 10, 14)
-    
-    try:
-        parse_date("2026-02-31")
-    except ValueError as e:
-        assert str(e) == "date is not a real date: '2026-02-31'"
-        
-    try:
-        parse_date("1 Oct")
-    except ValueError as e:
-        assert str(e) == "date is not a real date: '1 Oct'"
-        
-    print("All date validation tests passed!")
+    if birds_val == 0:
+        raise ValueError("birds is zero")
+    if eggs_val > birds_val:
+        raise ValueError("more eggs than birds")
 
-if __name__ == "__main__":
-    check()
+    return ProductionRecord(
+        date=date_val,
+        flock=flock_val,
+        eggs=eggs_val,
+        birds=birds_val,
+        recorded_by=row.get("recorded_by", "").strip()
+    )

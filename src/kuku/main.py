@@ -1,80 +1,79 @@
-# Think Answer: When a module is executed directly via `python -m src.kuku.main`, Python sets its __name__ variable to "__main__" instead of its package module name (src.kuku.main).
-
 import sys
-from pathlib import Path
 import logging
-from collections import Counter
-from src.kuku.validate import validate_row
-from src.kuku.reader import read_csv, write_csv
-from src.kuku.transform import missing_days, totals_by_flock
+from dataclasses import asdict
+from pathlib import Path
 
-log = logging.getLogger(__name__)
-
-RAW = Path("data") / "raw" / "eggs_raw.csv"
-CLEAN_OUT = Path("data") / "clean" / "eggs_clean.csv"
-REJECTS_OUT = Path("data") / "clean" / "eggs_rejects.csv"
+from kuku.reader import read_csv, write_csv
+from kuku.validate import validate_row
+from kuku.transform import missing_days, totals_by_flock
 
 def setup_logging():
-    level = logging.DEBUG if "--debug" in sys.argv else logging.INFO
+    debug_mode = "--debug" in sys.argv
+    level = logging.DEBUG if debug_mode else logging.INFO
+    
+    log_dir = Path("data")
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / "pipeline.log"
+
     logging.basicConfig(
         level=level,
-        format="%(levelname)-8s %(name)s: %(message)s",
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler("pipeline.log", mode="w")
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler(log_file, encoding="utf-8")
         ]
     )
 
+def run(raw_path: Path, out_dir: Path):
+    log = logging.getLogger(__name__)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    clean_path = out_dir / "clean_production.csv"
+
+    try:
+        rows = read_csv(raw_path)
+    except Exception as e:
+        log.error(f"Failed to read raw CSV: {e}")
+        return 0, []
+
+    clean_rows = []
+    rejected = []
+    seen = set()
+
+    for row in rows:
+        try:
+            validated = validate_row(row)
+            dup_key = (validated.date, validated.flock)
+            if dup_key in seen:
+                raise ValueError(f"duplicate record for flock {validated.flock} on {validated.date}")
+            seen.add(dup_key)
+            clean_rows.append(validated)
+        except ValueError as e:
+            rejected.append({"row": row, "reason": str(e)})
+            log.warning(f"Skipping invalid row {row}: {e}")
+
+    missing = missing_days(clean_rows)
+    egg_totals = totals_by_flock(clean_rows, "eggs")
+    bird_totals = totals_by_flock(clean_rows, "birds")
+
+    log.info(f"Egg totals by flock: {dict(egg_totals)}")
+    log.info(f"Bird totals by flock: {dict(bird_totals)}")
+    log.info(f"Missing days detected: {len(missing)}")
+
+    try:
+        dict_rows = [asdict(r) for r in clean_rows]
+        write_csv(clean_path, dict_rows)
+        log.info(f"Successfully wrote {len(dict_rows)} clean rows to {clean_path}")
+    except Exception as e:
+        log.error(f"Failed to write clean CSV: {e}")
+
+    return len(clean_rows), rejected
+
 def main():
     setup_logging()
-    clean = []
-    rejects = []
-    seen_pairs = set()
-    reject_reasons = Counter()
-
-    rows, raw_headers = read_csv(RAW)
-
-    for i, row in enumerate(rows):
-        line_num = i + 2
-        try:
-            clean_row = validate_row(row)
-            pair = (clean_row["flock"], clean_row["date"])
-            if pair in seen_pairs:
-                raise ValueError(f"duplicate: flock {clean_row['flock']} on {clean_row['date']} already recorded")
-            seen_pairs.add(pair)
-            clean.append(clean_row)
-            log.debug(f"Line {line_num} clean: {clean_row}")
-        except ValueError as e:
-            bad_row = row.copy()
-            bad_row["line"] = line_num
-            bad_row["reason"] = str(e)
-            rejects.append(bad_row)
-            log.warning(f"Line {line_num} rejected: {e}")
-            
-            reason_key = str(e).split(":")[0].strip()
-            reject_reasons[reason_key] += 1
-
-    log.info(f"Finished processing. Clean: {len(clean)}, Rejected: {len(rejects)}, Total: {len(rows)}")
-    assert len(clean) + len(rejects) == len(rows)
-
-    # Run missing days check
-    missing_days(clean)
-
-    # Calculate totals by flock
-    flock_totals = totals_by_flock(clean)
-    
-    # Log summary statistics
-    reasons_summary = ", ".join(f"{reason} {count}" for reason, count in reject_reasons.items())
-    log.info(f"Reject reasons: {reasons_summary}")
-    
-    totals_str = ", ".join(f"{flock} {total:,}" for flock, total in sorted(flock_totals.items()))
-    log.info(f"Eggs per flock: {totals_str}")
-
-    # Write files
-    write_csv(CLEAN_OUT, clean)
-    
-    reject_headers = ["line", "reason"] + list(raw_headers)
-    write_csv(REJECTS_OUT, rejects, fieldnames=reject_headers)
+    raw_path = Path("data/raw_production.csv")
+    out_dir = Path("data")
+    clean_count, rejected = run(raw_path, out_dir)
+    print(f"Pipeline complete. Clean: {clean_count}, Rejected: {len(rejected)}")
 
 if __name__ == "__main__":
     main()

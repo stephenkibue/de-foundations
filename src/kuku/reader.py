@@ -1,26 +1,16 @@
 import csv
 from pathlib import Path
-import logging
 
-log = logging.getLogger(__name__)
-
-def read_csv(filepath):
-    with open(filepath, mode="r", encoding="utf-8") as f:
+def read_csv(path: Path):
+    with open(path, mode="r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        rows = list(reader)
-        headers = reader.fieldnames
-    log.info(f"Read {len(rows)} rows from {filepath}.")
-    return rows, headers
+        return list(reader)
 
-def write_csv(filepath, rows, fieldnames=None):
-    filepath = Path(filepath)
-    filepath.parent.mkdir(parents=True, exist_ok=True)
+def write_csv(path: Path, rows):
     if not rows:
         return
-    if fieldnames is None:
-        fieldnames = rows[0].keys()
-    with open(filepath, mode="w", encoding="utf-8", newline="") as f:
+    fieldnames = list(rows[0].keys()) if isinstance(rows[0], dict) else list(rows[0].__dict__.keys())
+    with open(path, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-    log.info(f"Wrote {len(rows)} rows to {filepath}.")

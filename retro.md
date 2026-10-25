@@ -115,3 +115,43 @@ The person correcting the data needs to see exactly what they typed to understan
 
 **5. One question I still have:**
  how to handle massive files that don't fit in memory
+ ## Retro: Kuku Package Refactoring & Pipeline Expansion
+
+1. **Warm-up score:** 10/10 — Successfully transitioned a single-script proof-of-concept into a modular, production-grade Python package.
+2. **Package layout (from memory):**
+   - `src/kuku/__init__.py` — Initializes the package namespace and module structure.
+   - `src/kuku/reader.py` — Handles robust CSV file input and output with logging.
+   - `src/kuku/validate.py` — Cleans and validates row schemas, rules, counts, and calendar dates.
+   - `src/kuku/transform.py` — Runs chronological gap detection and calculates aggregate flock totals using collections.
+   - `src/kuku/main.py` — Orchestrates the full pipeline workflow, CLI argument parsing (`--debug`), and final summary reporting.
+3. **Missing days priority:** I would ask the farm about the **Sunday** gaps first. Since multiple missing records cluster on Sundays, it strongly suggests a regular staffing or operational shift change rather than random data entry errors.
+4. **Remaining question:** How should the pipeline handle retroactive corrections if farm workers submit late data for previously flagged missing days?
+
+## Week 2: Working with real files
+
+The `kuku` package automates the ingestion, validation, and transformation of raw poultry farm production data into clean, analysis-ready records. The pipeline processes production records, successfully outputting 42 clean records and rejecting 8 with detailed diagnostic reasons.
+
+### How to Run
+```powershell
+python -m src.kuku.main
+
+---
+
+### 2. Create or Update `retro.md`
+Populate your `retro.md` file with your weekly review:
+
+```markdown
+# Week 2 Retrospective
+
+### 1. Which day was hardest, and why?
+Refactoring the core data structures from raw dictionaries to the strongly-typed `ProductionRecord` dataclass was the most challenging part. It caused ripples across validation, transformation, and testing modules, requiring careful alignment of attribute access and test mocks.
+
+### 2. Which idea could you now teach someone else?
+I feel confident teaching how to write parameterized unit tests with `pytest` and how to use isolation strategies (testing small mock datasets instead of raw production files) to make tests lightning-fast and deterministic.
+
+### 3. Which idea is still shaky?
+Advanced package installation states and path configurations (`pip install -e .` combined with structured namespace layouts) still require deliberate focus to ensure absolute import clarity.
+
+### 4. Hours actually worked against the 12 to 15 planned?
+Worked approximately 14 hours, aligning closely with the 12-to-15-hour planned target.
+3. Tidy the Repository Structure

@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/kuku/main.py
+src/kuku/reader.py
+src/kuku/transform.py
+src/kuku/validate.py
+src/kuku.egg-info/PKG-INFO
+src/kuku.egg-info/SOURCES.txt
+src/kuku.egg-info/dependency_links.txt
+src/kuku.egg-info/top_level.txt
+tests/test_transform.py
+tests/test_validate.py

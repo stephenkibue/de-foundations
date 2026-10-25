@@ -8,12 +8,12 @@ def missing_days(rows):
     if not rows:
         return []
 
-    dates = [r["date"] for r in rows]
+    dates = [r.date for r in rows]
     min_date = min(dates)
     max_date = max(dates)
     
-    flocks = sorted(list(set(r["flock"] for r in rows)))
-    existing = set((r["flock"], r["date"]) for r in rows)
+    flocks = sorted(list(set(r.flock for r in rows)))
+    existing = set((r.flock, r.date) for r in rows)
     
     missing = []
     current = min_date
@@ -22,14 +22,14 @@ def missing_days(rows):
             pair = (flock, current)
             if pair not in existing:
                 weekday = current.strftime("%A")
-                missing.append({"flock": flock, "date": current, "weekday": weekday})
+                missing.append((flock, current))
                 log.warning(f"Missing record for Flock {flock} on {current} ({weekday})")
         current += timedelta(days=1)
         
     return missing
 
-def totals_by_flock(rows):
+def totals_by_flock(rows, metric="eggs"):
     totals = defaultdict(int)
     for r in rows:
-        totals[r["flock"]] += r["eggs"]
+        totals[r.flock] += getattr(r, metric)
     return totals

@@ -100,3 +100,18 @@ When we "reject" a row on Wednesday, do we just delete it entirely, or do we sav
 
 **4. One question I still have:**
 When flattening nested JSON, how do we handle extremely deep nesting (like 5 or 6 levels down) without writing massive, confusing loops?
+## Day 8 (Week 2, Day 3 - Validation Pipeline)
+**1. Warm-up score:**
+78
+
+**2. Why reject number-words like "twelve hundred"?**
+Writing code to parse every possible word variation is complex and error-prone. Rejecting it with a clear reason forces the data entry source to fix their behavior. Guessing risks corrupting downstream totals if the guess is wrong.
+
+**3. Why check duplicates by (flock, date) and not the whole row?**
+A flock can only have one true record per day. If a duplicate row has a different egg count, checking the whole row would treat it as a unique valid entry, doubling that day's production in our totals.
+
+**4. Why keep raw values in the reject file?**
+The person correcting the data needs to see exactly what they typed to understand the error. If we partially clean it before writing to the reject file, the original context of the typo is destroyed.
+
+**5. One question I still have:**
+ how to handle massive files that don't fit in memory

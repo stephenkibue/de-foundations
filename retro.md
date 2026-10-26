@@ -167,3 +167,17 @@ Worked approximately 14 hours, aligning closely with the 12-to-15-hour planned t
 
 3. **Difference Between `loc` and `iloc`:** 
    - `loc` selects data using explicit row/column labels, while `iloc` selects data using integer index positions.
+## Day 12 (Week 3) - Data Cleaning with Pandas
+
+1. **Warm-Up Score & Surprises (#2 and #7):**
+   - 6 / 10.
+   - **Surprise #2:** How easily standard defaults silently swallow literal text like `"n/a"` by converting it straight into `NaN`.
+   - **Surprise #7:** How efficiently vectorised boolean masking in Pandas handles complex multi-condition validation checks without writing explicit Python `for` loops.
+
+2. **The Two Silent Changes Pandas Made:**
+   - **Automatic NaT/NaN conversion:** Default CSV loading interprets ambiguous strings (like `"n/a"`, `""`, spaces) as missing values (`NaN`).
+   - **Type inference:** Pandas automatically guesses data types (e.g., treating columns with mixed text/numbers as `object` rather than integers) during default imports.
+
+3. **Lines of Code (Day 8 vs. Today):**
+   - Pandas made the cleaning logic much more concise and declarative compared to Day 8's manual Python iteration approach. Vectorized operations and `.apply()`/`loc` rules were much cleaner to maintain.
+

@@ -155,3 +155,15 @@ Advanced package installation states and path configurations (`pip install -e .`
 ### 4. Hours actually worked against the 12 to 15 planned?
 Worked approximately 14 hours, aligning closely with the 12-to-15-hour planned target.
 3. Tidy the Repository Structure
+
+## Day 11 (Week 3) - EDA with Pandas
+
+1. **Warm-Up Score & Q9 Explanation:** 
+   -  7 / 10.
+   - **Q9 Explanation:** When parsing date strings during file ingestion using `parse_dates=["date"]`, Pandas converts text strings into structured `datetime64` objects. This allows direct date filtering and comparison (e.g., `>= "2026-10-10"`) without worrying about raw string formatting inconsistencies like `10/10/2026`.
+
+2. **Week 2 Loop to Replace with Pandas:** 
+   - Replaced manual dictionary grouping loops for counts with a single clean Pandas line: `df["flock"].value_counts()`.
+
+3. **Difference Between `loc` and `iloc`:** 
+   - `loc` selects data using explicit row/column labels, while `iloc` selects data using integer index positions.

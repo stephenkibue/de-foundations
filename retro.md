@@ -181,3 +181,16 @@ Worked approximately 14 hours, aligning closely with the 12-to-15-hour planned t
 3. **Lines of Code (Day 8 vs. Today):**
    - Pandas made the cleaning logic much more concise and declarative compared to Day 8's manual Python iteration approach. Vectorized operations and `.apply()`/`loc` rules were much cleaner to maintain.
 
+## Day 13 (Week 3) - Analysis with Pandas
+
+1. **Warm-Up Score & Method Selection:**
+   - 9 / 10. Method 3 (total eggs ÷ total bird-days) is the correct approach because it correctly accounts for differing population sizes across groups and days.
+
+2. **The "Never Average a Rate" Rule:**
+   - Averaging percentages or rates directly gives equal weight to groups of vastly different sizes (treating a tiny sample with the exact same weight as a massive flock), which severely distorts the true aggregate picture. Always sum the numerators and denominators separately before computing the ratio.
+
+3. **Message to the Owner About Flocks B and C:**
+   - "Flock B saw a slight dip in week 42 but remains healthy, whereas Flock C continues to underperform consistently at 71.1% and requires immediate investigation into feed quality and management."
+
+4. **Remaining Question:**
+   - How can we best automate this analysis pipeline to handle daily CSV drops and flag anomalies automatically as soon as new data lands?
